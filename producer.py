@@ -1,11 +1,16 @@
 from time import sleep
 from json import dumps
-from kafka import KafkaProducer
+from confluent_kafka import Producer
 import time
 import random
+import logging
 
-producer = KafkaProducer(bootstrap_servers='localhost:9092',
-                         value_serializer=lambda x: dumps(x).encode('utf-8'))
+
+producer = Producer({
+    "bootstrap.servers": "localhost:19092",
+    "enable.idempotence": True,
+    "request.required.acks": "all",
+})
 
 for e in range(1000):
     timenow = int(time.time())
@@ -14,5 +19,6 @@ for e in range(1000):
         "timestamp": timenow,
         "data": e
     }
-    producer.send('test', value=data)
+    producer.produce(topic='telemetry', value=dumps(data))
+    print("data sent")
     sleep(1)

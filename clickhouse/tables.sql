@@ -1,10 +1,10 @@
 CREATE database storage;
 
-CREATE TABLE storage.queue (
+CREATE TABLE IF NOT EXISTS storage.queue (
     id UInt32,
     timestamp UInt64,
     data Float64
-  ) ENGINE = Kafka('192.168.1.67:9092', 'test', 'group1')
+  ) ENGINE = Kafka('kafka-1:19093,kafka-2:19093', 'telemetry', 'telemetry-group')
               SETTINGS kafka_format = 'JSONEachRow',
                        kafka_num_consumers = 1;
 

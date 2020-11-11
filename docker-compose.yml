@@ -36,6 +36,30 @@ services:
     depends_on:
       - zookeeper
 
+  kafka-rest-proxy:
+    image: confluentinc/cp-kafka-rest:5.5.1
+    hostname: kafka-rest-proxy
+    ports:
+      - "8082:8082"
+    environment:
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8082/
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-1:19093,PLAINTEXT://kafka-2:29093
+    depends_on:
+      - kafka-1
+      - kafka-2
+
+  kafka-topics-ui:
+    image: landoop/kafka-topics-ui:0.9.4
+    hostname: kafka-topics-ui
+    ports:
+      - "8000:8000"
+    environment:
+      KAFKA_REST_PROXY_URL: "http://kafka-rest-proxy:8082/"
+      PROXY: "true"
+    depends_on:
+      - kafka-rest-proxy
+
   ch:
     image: yandex/clickhouse-server
     volumes:

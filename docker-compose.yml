@@ -39,6 +39,7 @@ services:
   ch:
     image: yandex/clickhouse-server
     volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
       - ./clickhouse/config:/etc/clickhouse-server
     ports:
       - "8123:8123"

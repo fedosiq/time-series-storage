@@ -6,14 +6,35 @@ services:
     ports:
       - "2181:2181"
 
-  kafka:
+  kafka-1:
     image: wurstmeister/kafka
     ports:
-      - "9092:9092"
+      - "19092:19092"
+      - "19093:19093"
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 192.168.1.67
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:19092,INSIDE://:19093
+      KAFKA_LISTENERS: OUTSIDE://:19092,INSIDE://:19093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT 
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "test:1:1"
+    depends_on:
+      - zookeeper
+
+  kafka-2:
+    image: wurstmeister/kafka
+    ports:
+      - "29092:29092"
+      - "29093:29093"
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:29092,INSIDE://:29093
+      KAFKA_LISTENERS: OUTSIDE://:29092,INSIDE://:29093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT 
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
 
   ch:
     image: yandex/clickhouse-server
@@ -22,6 +43,5 @@ services:
     ports:
       - "8123:8123"
     depends_on:
-      - kafka
-    links:
-      - kafka
+      - kafka-1
+      - kafka-2

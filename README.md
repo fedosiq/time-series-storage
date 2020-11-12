@@ -56,3 +56,14 @@ $ python producer.py
 - Kafka/ClickHouse: Kafka -> Consumer "exact-once" delivery or some deduplication mechanism (add a comment);
 - ClickHouse: research and prevent data losses;
 - Make a simple notes with a list of circumstances by which our system may fail;
+
+### Performance testing
+- Add metrics storage (Prometheus or Graphite). Kafka and CH both should support it;
+- Connect ClickHouse with metrics storage;
+- Connect Kafka with metrics storage;
+- Write a device test load using python + locust or python + multiprocessing or smth else;
+- Make stress test;
+- May be deploy all of it on the Google Cloud or AWS (with free subscription);
+- Make perfomance tests depending on number of nodes available;
+- Make some test on fault-tolerance (Does our system works properly when some nodes unavailable?);
+

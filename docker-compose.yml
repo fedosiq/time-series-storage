@@ -7,7 +7,8 @@ services:
       - "2181:2181"
 
   kafka-1:
-    image: wurstmeister/kafka
+    build: .
+#    image: wurstmeister/kafka
     ports:
       - "19092:19092"
       - "19093:19093"
@@ -18,11 +19,13 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT 
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
     depends_on:
       - zookeeper
 
   kafka-2:
-    image: wurstmeister/kafka
+    build: .
+#    image: wurstmeister/kafka
     ports:
       - "29092:29092"
       - "29093:29093"
@@ -33,6 +36,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT 
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
     depends_on:
       - zookeeper
 

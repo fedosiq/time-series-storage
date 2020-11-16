@@ -74,3 +74,21 @@ services:
     depends_on:
       - kafka-1
       - kafka-2
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - ch
+      - kafka-1
+      - kafka-2
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+#    volumes:
+#      - ./grafana:/var/lib/grafana

@@ -15,6 +15,12 @@ Connect to ClickHouse using https://tabix.io/:
   
 Connect to Kafka using Web UI on http://localhost:8000;
 
+Connect to Grafana on localhost:3000 as admin (pass: admin) and add Prometheus data source (http://prometheus:9090);
+
+Add kafka dashboard:
+Create -> import -> import via grafana.com -> enter dashboard id (721)
+
+
 Finally, start a producer:
 
 ```sh
@@ -58,9 +64,9 @@ $ python producer.py
 - Make a simple notes with a list of circumstances by which our system may fail;
 
 ### Performance testing
-- Add metrics storage (Prometheus or Graphite). Kafka and CH both should support it;
-- Connect ClickHouse with metrics storage;
-- Connect Kafka with metrics storage;
+- ~~Add metrics storage (Prometheus or Graphite). Kafka and CH both should support it~~;
+- ~~Connect ClickHouse with metrics storage~~;
+- ~~Connect Kafka with metrics storage~~;
 - Write a device test load using python + locust or python + multiprocessing or smth else;
 - Make stress test;
 - May be deploy all of it on the Google Cloud or AWS (with free subscription);

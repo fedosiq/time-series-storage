@@ -16,7 +16,7 @@ services:
       HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
       KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:19092,INSIDE://:19093
       KAFKA_LISTENERS: OUTSIDE://:19092,INSIDE://:19093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT 
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
@@ -33,7 +33,7 @@ services:
       HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
       KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:29092,INSIDE://:29093
       KAFKA_LISTENERS: OUTSIDE://:29092,INSIDE://:29093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT 
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
@@ -64,7 +64,8 @@ services:
     depends_on:
       - kafka-rest-proxy
 
-  ch:
+
+  ch-1:
     image: yandex/clickhouse-server
     volumes:
       - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
@@ -75,6 +76,29 @@ services:
       - kafka-1
       - kafka-2
 
+  ch-2:
+    image: yandex/clickhouse-server
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config:/etc/clickhouse-server
+    ports:
+      - "8124:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+
+  ch-3:
+    image: yandex/clickhouse-server
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config:/etc/clickhouse-server
+    ports:
+      - "8125:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+
+
   prometheus:
     image: prom/prometheus
     ports:
@@ -82,7 +106,8 @@ services:
     volumes:
       - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
-      - ch
+      - ch-1
+      - ch-2
       - kafka-1
       - kafka-2
 

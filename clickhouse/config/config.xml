@@ -198,7 +198,7 @@
         <awesome_cluster>
             <shard>
                 <replica>
-                    <host>172.29.0.2</host>
+                    <host>ch-1</host>
                     <port>9000</port>
                     <user>default</user>
                     <password></password>
@@ -207,7 +207,15 @@
 
             <shard>
                 <replica>
-                    <host>172.29.0.3</host>
+                    <host>ch-2</host>
+                    <port>9000</port>
+                    <user>default</user>
+                    <password></password>
+                </replica>
+            </shard>
+            <shard>
+                <replica>
+                    <host>ch-3</host>
                     <port>9000</port>
                     <user>default</user>
                     <password></password>
@@ -266,42 +274,6 @@
     <!-- Default session timeout, in seconds. Default: 60. -->
     <default_session_timeout>60</default_session_timeout>
 
-    <!-- Sending data to Graphite for monitoring. Several sections can be defined. -->
-    <!--
-        interval - send every X second
-        root_path - prefix for keys
-        hostname_in_path - append hostname to root_path (default = true)
-        metrics - send data from table system.metrics
-        events - send data from table system.events
-        asynchronous_metrics - send data from table system.asynchronous_metrics
-    -->
-    <!--
-    <graphite>
-        <host>localhost</host>
-        <port>42000</port>
-        <timeout>0.1</timeout>
-        <interval>60</interval>
-        <root_path>one_min</root_path>
-        <hostname_in_path>true</hostname_in_path>
-
-        <metrics>true</metrics>
-        <events>true</events>
-        <events_cumulative>false</events_cumulative>
-        <asynchronous_metrics>true</asynchronous_metrics>
-    </graphite>
-    <graphite>
-        <host>localhost</host>
-        <port>42000</port>
-        <timeout>0.1</timeout>
-        <interval>1</interval>
-        <root_path>one_sec</root_path>
-
-        <metrics>true</metrics>
-        <events>true</events>
-        <events_cumulative>false</events_cumulative>
-        <asynchronous_metrics>false</asynchronous_metrics>
-    </graphite>
-    -->
 
     <!-- Serve endpoint fot Prometheus monitoring. -->
     <!--
@@ -456,36 +428,6 @@
     <!-- <max_table_size_to_drop>0</max_table_size_to_drop> -->
     <!-- <max_partition_size_to_drop>0</max_partition_size_to_drop> -->
 
-    <!-- Example of parameters for GraphiteMergeTree table engine -->
-    <graphite_rollup_example>
-        <pattern>
-            <regexp>click_cost</regexp>
-            <function>any</function>
-            <retention>
-                <age>0</age>
-                <precision>3600</precision>
-            </retention>
-            <retention>
-                <age>86400</age>
-                <precision>60</precision>
-            </retention>
-        </pattern>
-        <default>
-            <function>max</function>
-            <retention>
-                <age>0</age>
-                <precision>60</precision>
-            </retention>
-            <retention>
-                <age>3600</age>
-                <precision>300</precision>
-            </retention>
-            <retention>
-                <age>86400</age>
-                <precision>3600</precision>
-            </retention>
-        </default>
-    </graphite_rollup_example>
 
     <!-- Directory in <clickhouse-path> containing schema files for various input formats.
          The directory will be created if it doesn't exist.

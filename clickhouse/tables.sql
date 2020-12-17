@@ -17,3 +17,6 @@ ORDER BY timestamp;
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS storage.queue_mv TO storage.sensors_data
   AS SELECT * FROM storage.queue;
+
+CREATE table storage.sensors_all as storage.sensors_data
+Engine = Distributed(awesome_cluster, storage, sensors_data, rand());

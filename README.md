@@ -15,7 +15,7 @@ Connect to ClickHouse using https://tabix.io/:
   
 Connect to Kafka using Web UI on http://localhost:8000;
 
-Connect to Grafana on localhost:9090 as admin (pass: admin) and add Prometheus data source;
+Connect to Grafana on localhost:3000 as admin (pass: admin) and add Prometheus data source (http://prometheus:9090);
 
 Add kafka dashboard:
 Create -> import -> import via grafana.com -> enter dashboard id (721)

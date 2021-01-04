@@ -46,7 +46,7 @@ $ python producer.py
   - How replication works in Kafka: https://kafka.apache.org/documentation/#replication
   </details>
 
-- <details><summary>Sharding for ClickHouse;</summary>
+- <details><summary><strike>Sharding for ClickHouse;</strike></summary>
   
   Three ClickHouse shards are configured in config.xml. Each shard is a clickhouse-server container.
   In order to distribute data over all shards, Kafka topic `partitions` parameter must be set to the number of CH shards.
@@ -69,7 +69,9 @@ $ python producer.py
 
 - Kafka/ClickHouse: Kafka -> Consumer "exact-once" delivery or some deduplication mechanism (add a comment);
 - ClickHouse: research and prevent data losses;
-- Make a simple notes with a list of circumstances by which our system may fail;
+- Make simple notes with a list of circumstances by which our system may fail;
+- Add data lenses for 10 seconds, 1 minute, 1 hour
+- Find performance bottlenecks
 
 ### Performance testing
 - ~~Add metrics storage (Prometheus or Graphite). Kafka and CH both should support it~~;

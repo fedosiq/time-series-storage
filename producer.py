@@ -17,9 +17,9 @@ def create_topic(num_partitions=3):
     for topic, f in fs.items():
         try:
             f.result()
-            print("Topic {} created".format(topic))
+            print(f"Topic {topic} created")
         except Exception as e:
-            print("Failed to create topic {}: {}".format(topic, e))
+            print(f"Failed to create topic {topic}: {e}")
 
 
 def start_producer():
@@ -36,7 +36,7 @@ def start_producer():
             "data": e
         }
         producer.produce(topic='telemetry', value=dumps(data))
-        print("data sent")
+        print(f"{data} sent")
         sleep(1)
 
 

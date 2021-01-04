@@ -46,7 +46,15 @@ $ python producer.py
   - How replication works in Kafka: https://kafka.apache.org/documentation/#replication
   </details>
 
-- Sharding/Replication for ClichHouse;
+- <details><summary>Sharding for ClickHouse;</summary>
+  
+  Three ClickHouse shards are configured in config.xml. Each shard is a clickhouse-server container.
+  In order to distribute data over all shards, Kafka topic `partitions` parameter must be set to the number of CH shards.
+  
+  </details>
+  
+- Replication for ClickHouse;
+  
 - <details><summary><strike>Kafka: producer -> Kafka "exact-once" reliable delivery</strike></summary>
 
   The reliability/durability is ensured by KafkaProducer `acks` parameter, which specify the number of required acknowledgemets from Kafka nodes. See: https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html#kafka.KafkaProducer

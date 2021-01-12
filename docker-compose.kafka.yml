@@ -1,0 +1,81 @@
+version: '3'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka-1:
+    build: .
+#    image: wurstmeister/kafka
+    ports:
+      - "19092:19092"
+      - "19093:19093"
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:19092,INSIDE://:19093
+      KAFKA_LISTENERS: OUTSIDE://:19092,INSIDE://:19093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
+    depends_on:
+      - zookeeper
+
+  kafka-2:
+    build: .
+#    image: wurstmeister/kafka
+    ports:
+      - "29092:29092"
+      - "29093:29093"
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:29092,INSIDE://:29093
+      KAFKA_LISTENERS: OUTSIDE://:29092,INSIDE://:29093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml
+    depends_on:
+      - zookeeper
+
+  kafka-rest-proxy:
+    image: confluentinc/cp-kafka-rest:5.5.1
+    hostname: kafka-rest-proxy
+    ports:
+      - "8082:8082"
+    environment:
+      KAFKA_REST_LISTENERS: http://0.0.0.0:8082/
+      KAFKA_REST_HOST_NAME: kafka-rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-1:19093,PLAINTEXT://kafka-2:29093
+    depends_on:
+      - kafka-1
+      - kafka-2
+
+  kafka-topics-ui:
+    image: landoop/kafka-topics-ui:0.9.4
+    hostname: kafka-topics-ui
+    ports:
+      - "8000:8000"
+    environment:
+      KAFKA_REST_PROXY_URL: "http://kafka-rest-proxy:8082/"
+      PROXY: "true"
+    depends_on:
+      - kafka-rest-proxy
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - kafka-1
+      - kafka-2
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+#    volumes:
+#      - ./grafana:/var/lib/grafana

@@ -70,7 +70,7 @@ class KafkaProducerLoad:
     async def _send_messages(self):
         for seq_num in range(self._n_msgs):
             msg = self._create_message()
-            msg["sequence_number"] = seq_num
+            msg["data"] = seq_num
             await self._producer.send(self._topic, json.dumps(msg).encode())
             self.message_sent.send(self._name)
 
@@ -78,9 +78,10 @@ class KafkaProducerLoad:
 
     @staticmethod
     def _create_message():
+        timenow = int(time.time())
         msg = {
             "id": random.randint(0, 1000),
-            "timestamp": str(datetime.datetime.utcnow()),
+            "timestamp": timenow,
         }
         return msg
 

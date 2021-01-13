@@ -4,13 +4,13 @@ from confluent_kafka import Producer
 from confluent_kafka.admin import AdminClient, NewTopic
 import time
 import random
-import logging
 
 
-def create_topic(num_partitions=3):
+def create_topic(n_partitions=3):
+    # a = AdminClient({"bootstrap.servers": "localhost:19092,localhost:29092"})
     a = AdminClient({"bootstrap.servers": "localhost:19092"})
 
-    telemetry = [NewTopic("telemetry", num_partitions=num_partitions, replication_factor=1)]
+    telemetry = [NewTopic("telemetry", num_partitions=n_partitions, replication_factor=1)]
 
     fs = a.create_topics(telemetry)
 
@@ -40,6 +40,25 @@ def start_producer():
         sleep(1)
 
 
+def start_batching_producer(batch_size=2):
+    producer = Producer({
+        "bootstrap.servers": "localhost:19092",
+        "enable.idempotence": True,
+        "request.required.acks": "all",
+    })
+    for e in range(1000):
+        timenow = int(time.time())
+        row = {
+            "id": random.choice(range(1000)),
+            "timestamp": timenow,
+            "data": e
+        }
+        data = "\n".join([dumps(row) for _ in range(batch_size)])
+        producer.produce(topic='telemetry', value=data)
+        print(f"{data} sent")
+        sleep(1)
+
+
 if __name__ == '__main__':
     create_topic()
-    start_producer()
+    start_batching_producer(2)

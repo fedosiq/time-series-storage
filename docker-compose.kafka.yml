@@ -5,11 +5,42 @@ services:
     container_name: zookeeper
     ports:
       - "2181:2181"
-
+  ch-1:
+    image: yandex/clickhouse-server
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config:/etc/clickhouse-server
+    ports:
+      - "8123:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+  ch-2:
+    image: yandex/clickhouse-server
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config:/etc/clickhouse-server
+    ports:
+      - "8124:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+  ch-3:
+    image: yandex/clickhouse-server
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config:/etc/clickhouse-server
+    ports:
+      - "8125:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
   kafka-1:
     build: .
     restart: always
-#    image: wurstmeister/kafka
     ports:
       - "19092:19092"
       - "19093:19093"
@@ -23,11 +54,9 @@ services:
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml -Xmx3G -Xms2G
     depends_on:
       - zookeeper
-
   kafka-2:
     build: .
     restart: always
-#    image: wurstmeister/kafka
     ports:
       - "29092:29092"
       - "29093:29093"
@@ -41,7 +70,6 @@ services:
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml -Xmx3G -Xms2G
     depends_on:
       - zookeeper
-
   kafka-3:
     build: .
     restart: always
@@ -58,7 +86,6 @@ services:
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml -Xmx3G -Xms2G
     depends_on:
       - zookeeper
-
   kafka-rest-proxy:
     image: confluentinc/cp-kafka-rest:5.5.1
     hostname: kafka-rest-proxy
@@ -71,7 +98,6 @@ services:
     depends_on:
       - kafka-1
       - kafka-2
-
   kafka-topics-ui:
     image: landoop/kafka-topics-ui:0.9.4
     hostname: kafka-topics-ui
@@ -91,7 +117,6 @@ services:
     depends_on:
       - kafka-1
       - kafka-2
-
   grafana:
     image: grafana/grafana
     ports:

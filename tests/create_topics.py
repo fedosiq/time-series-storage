@@ -19,3 +19,7 @@ def create_topic(num_partitions=3):
             print(f"Topic {topic} created")
         except Exception as e:
             print(f"Failed to create topic {topic}: {e}")
+
+
+if __name__ == "__main__":
+    create_topic()

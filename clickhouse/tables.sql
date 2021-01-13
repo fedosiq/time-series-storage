@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS storage.queue (
     data Float64
   ) ENGINE = Kafka()
 SETTINGS
-    kafka_broker_list = 'kafka-1:19093',
+    kafka_broker_list = 'kafka-1:19093,kafka-2:29093,kafka-3:39093',
     kafka_topic_list = 'telemetry',
     kafka_group_name = 'telemetry-group',
     kafka_format = 'JSONEachRow';

@@ -48,17 +48,17 @@ def start_batching_producer(batch_size=2):
     })
     for e in range(1000):
         timenow = int(time.time())
-        row = {
+        make_row = lambda: {
             "id": random.choice(range(1000)),
             "timestamp": timenow,
             "data": e
         }
-        data = "\n".join([dumps(row) for _ in range(batch_size)])
+        data = "\n".join([dumps(make_row()) for _ in range(batch_size)])
         producer.produce(topic='telemetry', value=data)
         print(f"{data} sent")
         sleep(1)
 
 
 if __name__ == '__main__':
-    create_topic()
-    start_batching_producer(2)
+    # create_topic()
+    start_batching_producer(1000)

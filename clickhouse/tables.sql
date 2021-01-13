@@ -35,3 +35,27 @@ GROUP BY (id, timeslice);
 
 create table storage.distr_minute_lens AS storage.minute_lens
 ENGINE = Distributed(awesome_cluster, storage, minute_lens);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS storage.ten_minute_lens
+ENGINE = AggregatingMergeTree()
+ORDER BY timeslice POPULATE AS
+SELECT DISTINCT
+  id, toUInt64(FLOOR(timestamp/600)*600) AS timeslice, avgState(data) as aggregate
+FROM storage.sensors_data
+GROUP BY (id, timeslice);
+
+create table storage.distr_ten_minute_lens AS storage.ten_minute_lens
+ENGINE = Distributed(awesome_cluster, storage, ten_minute_lens);
+
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS storage.hour_lens
+ENGINE = AggregatingMergeTree()
+ORDER BY timeslice POPULATE AS
+SELECT
+  id, toUInt64(FLOOR(timestamp/3600)*3600) AS timeslice, avgState(data) as aggrregate
+FROM storage.sensors_data
+GROUP BY (id, timeslice);
+
+create table storage.distr_hour_lens AS storage.hour_lens
+ENGINE = Distributed(awesome_cluster, storage, hour_lens);

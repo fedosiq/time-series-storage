@@ -8,6 +8,7 @@ services:
 
   kafka-1:
     build: .
+    restart: always
 #    image: wurstmeister/kafka
     ports:
       - "19092:19092"
@@ -25,6 +26,7 @@ services:
 
   kafka-2:
     build: .
+    restart: always
 #    image: wurstmeister/kafka
     ports:
       - "29092:29092"
@@ -42,7 +44,7 @@ services:
 
   kafka-3:
     build: .
-#    image: wurstmeister/kafka
+    restart: always
     ports:
       - "39092:39092"
       - "39093:39093"

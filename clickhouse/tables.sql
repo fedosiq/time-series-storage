@@ -52,7 +52,7 @@ ENGINE = Distributed(awesome_cluster, storage, ten_minute_lens);
 CREATE MATERIALIZED VIEW IF NOT EXISTS storage.hour_lens
 ENGINE = AggregatingMergeTree()
 ORDER BY timeslice POPULATE AS
-SELECT
+SELECT DISTINCT
   id, toUInt64(FLOOR(timestamp/3600)*3600) AS timeslice, avgState(data) as aggrregate
 FROM storage.sensors_data
 GROUP BY (id, timeslice);

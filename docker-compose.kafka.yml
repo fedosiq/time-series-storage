@@ -40,6 +40,23 @@ services:
     depends_on:
       - zookeeper
 
+  kafka-3:
+    build: .
+#    image: wurstmeister/kafka
+    ports:
+      - "39092:39092"
+      - "39093:39093"
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:39092,INSIDE://:39093
+      KAFKA_LISTENERS: OUTSIDE://:39092,INSIDE://:39093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml -Xmx3G -Xms2G
+    depends_on:
+      - zookeeper
+
   kafka-rest-proxy:
     image: confluentinc/cp-kafka-rest:5.5.1
     hostname: kafka-rest-proxy

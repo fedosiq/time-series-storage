@@ -5,13 +5,14 @@ import random
 import json
 import collections
 import datetime
+import copy
 
 
 import blinker
 import click
 from aiokafka import AIOKafkaProducer
+from concurrent.futures import ProcessPoolExecutor
 
-loop = asyncio.get_event_loop()
 
 logger = logging.getLogger()
 logger.setLevel(level=logging.INFO)
@@ -24,20 +25,28 @@ class MetricsStorage:
     def on_message_sent(self, worker_name):
         self._messages_sent_event_storage[worker_name] += 1
 
-    async def print_metrics_periodically(self, period=2):
+    async def print_metrics_periodically(self, period=5):
+        worker_start_time = time.time()
         start_time = time.time()
+        previous_snapshot = copy.deepcopy(self._messages_sent_event_storage)
+
         while True:
             await asyncio.sleep(period)
             duration = (time.time() - start_time)
-            logger.info(f"Worker statistics ({datetime.timedelta(seconds=duration)}):")
             overall_msgs_sent = 0
             overall_msgs_rate = 0
+
+            logger.info(f"Worker statistics ({datetime.timedelta(seconds=(time.time() - worker_start_time))}):")
             for worker_name, messages_sent in self._messages_sent_event_storage.items():
-                msgs_rate = messages_sent / duration 
+                msgs_rate = (messages_sent - previous_snapshot[worker_name]) / duration 
                 logger.info(f" -- {worker_name}: {messages_sent} msgs sent, {msgs_rate} mps")
                 overall_msgs_rate += msgs_rate
                 overall_msgs_sent += messages_sent
+
             logger.info(f" -- -- Overall: {overall_msgs_sent} msgs sent, {overall_msgs_rate} mps")
+
+            start_time = time.time()
+            previous_snapshot = copy.deepcopy(self._messages_sent_event_storage)
 
 class KafkaProducerLoad:
     def __init__(self, name, n_msgs, msg_period, topic, producer_config):
@@ -65,8 +74,7 @@ class KafkaProducerLoad:
             await self._producer.send(self._topic, json.dumps(msg).encode())
             self.message_sent.send(self._name)
 
-            await asyncio.sleep(self._msg_period)
-            logger.debug(f"{self._name}: {msg} sent")
+            #await asyncio.sleep(self._msg_period)
 
     @staticmethod
     def _create_message():
@@ -78,14 +86,15 @@ class KafkaProducerLoad:
         return msg
 
 
-@click.command()
-@click.option("--n_producers", default=1)
-@click.option("--n_messages", default=1000)
-@click.option("--msgs_per_sec", default=1)
-def main(n_producers, n_messages, msgs_per_sec):
+def process_main(args):
+    n_producers, n_messages, msgs_per_sec = args
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     logging.basicConfig(level=logging.INFO)
     metrics_storage = MetricsStorage()
     producers = []
+
     for prod_num in range(n_producers):
         prod = KafkaProducerLoad(
             f"prod_{prod_num}",
@@ -94,6 +103,8 @@ def main(n_producers, n_messages, msgs_per_sec):
             msg_period=1 / msgs_per_sec,
             producer_config={
                 "bootstrap_servers": 'localhost:19092',
+                "max_batch_size": 32768,
+                "acks": 0,
             }
         )
         prod.message_sent.connect(metrics_storage.on_message_sent)
@@ -111,4 +122,14 @@ def main(n_producers, n_messages, msgs_per_sec):
     )
 
 
-main()
+@click.command()
+@click.option("--n_producers", default=1)
+@click.option("--n_messages", default=1000)
+@click.option("--msgs_per_sec", default=1)
+def main(n_producers, n_messages, msgs_per_sec):
+    with ProcessPoolExecutor() as executor:
+        executor.map(process_main, [(n_producers, n_messages, msgs_per_sec) for _ in range(2)])
+
+
+if __name__ == "__main__":
+    main()

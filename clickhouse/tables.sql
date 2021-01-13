@@ -1,4 +1,4 @@
-CREATE database storage;
+CREATE database IF NOT EXISTS storage;
 
 CREATE TABLE IF NOT EXISTS storage.queue (
     id UInt32,

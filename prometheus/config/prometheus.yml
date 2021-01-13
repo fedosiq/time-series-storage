@@ -13,6 +13,6 @@ scrape_configs:
 
   - job_name: kafka
     static_configs:
-      - targets: [ 'kafka-1:7071', 'kafka-2:7071' ]
+      - targets: [ 'kafka-1:7071', 'kafka-2:7071', 'kafka-3:7071' ]
     tls_config:
       insecure_skip_verify: true

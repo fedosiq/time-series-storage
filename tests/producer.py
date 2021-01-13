@@ -78,10 +78,9 @@ class KafkaProducerLoad:
 
     @staticmethod
     def _create_message():
-        timenow = time.time()
         msg = {
             "id": random.randint(0, 1000),
-            "timestamp": timenow,
+            "timestamp": str(datetime.datetime.utcnow()),
         }
         return msg
 

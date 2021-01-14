@@ -1,85 +1,54 @@
 # ClickHouse - Kafka
 
-## Deploy
+## Requirements
 
-Download and start all docker images.
+- docker-compose (tested with 1.27.4, build 40524192)
+- docker (tested with 20.10.2, build 2291f61)
+- python 3.7+
 
-```
+## Run
+
+Build and run all services.
+
+```sh
+$ docker-compose build
 $ docker-compose up
 ```
 
-Connect to ClickHouse using https://tabix.io/:
-- Username: default
-- Host: https://localhost:8123
-- Name: <choose any>
-  
-Connect to Kafka using Web UI on http://localhost:8000;
-
-Connect to Grafana on localhost:3000 as admin (pass: admin) and add Prometheus data source (http://prometheus:9090);
-
-Add kafka dashboard:
-Create -> import -> import via grafana.com -> enter dashboard id (721)
-
-
-Finally, start a producer:
+After all services are ready, go to `tests`, install all required dependencies and create `telemetry` topic:
 
 ```sh
-$ pip install -r requirements.txt
-$ python producer.py
+$ cd tests
+$ pip3 install -r requirements.txt
+$ python3 create_topics.py
 ```
 
-## Roadmap
+After topic is created, you can start to load the deployed services with low-freq messages (default 1 Hz):
 
-### Initial implementation
+```sh
+$ cd tests
+$ python3 producer.py
+```
 
-- Picture with a project architecture;
+## Monitoring/Observation
 
-- ~~Add ClickHouse to docker-compose~~;
-- ~~Add Kafka to docker-compose~~;
-- ~~Write a simple artificial producer~~;
+### ClickHouse
 
-- <details><summary><strike>Sharding/Replication for Kafka</strike></summary>
+Connect to ClickHouse using https://tabix.io/:
+- Username: default
+- Host: https://localhost:8123 (You can any other available port, see `docker-compose.yaml`)
+- Name: <choose any>
 
-  Sharding is implemented by partitioning Kafka topics and is specified by `partitions` parameter. Replication is specified by `replication factor` - how many   replicas should be distributed across available nodes. 
+### Kafka
 
-  Links:
-  - How replication works in Kafka: https://kafka.apache.org/documentation/#replication
-  </details>
+You can access Kafka topics UI on http://localhost:8000;
 
-- <details><summary><strike>Sharding for ClickHouse;</strike></summary>
-  
-  Three ClickHouse shards are configured in config.xml. Each shard is a clickhouse-server container.
-  In order to distribute data over all shards, Kafka topic `partitions` parameter must be set to the number of CH shards.
-  
-  </details>
-  
-- Replication for ClickHouse;
-  
-- <details><summary><strike>Kafka: producer -> Kafka "exact-once" reliable delivery</strike></summary>
+### Grafana
 
-  The reliability/durability is ensured by KafkaProducer `acks` parameter, which specify the number of required acknowledgemets from Kafka nodes. See: https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html#kafka.KafkaProducer
+Connect to Grafana on http://localhost:3000
+- Username: admin
+- Password: admin
 
-  > The number of acknowledgments the producer requires the leader to have received before considering a request complete. This controls the durability of records that are sent. ...
-
-  The "exact-once" delivery sematics supported by "idempotence" parameter, which force Kafka to make deduplication of messages. Links: 
-  - https://kafka.apache.org/documentation/#semantics (Since 0.11.0.0, the Kafka producer also supports an idempotent delivery option which guarantees that resending will not result in duplicate entries in the log);
-  - https://www.cloudkarafka.com/blog/2019-04-10-apache-kafka-idempotent-producer-avoiding-message-duplication.html
-
-  </details>
-
-- Kafka/ClickHouse: Kafka -> Consumer "exact-once" delivery or some deduplication mechanism (add a comment);
-- ClickHouse: research and prevent data losses;
-- Make simple notes with a list of circumstances by which our system may fail;
-- Add data lenses for 10 seconds, 1 minute, 1 hour
-- Find performance bottlenecks
-
-### Performance testing
-- ~~Add metrics storage (Prometheus or Graphite). Kafka and CH both should support it~~;
-- ~~Connect ClickHouse with metrics storage~~;
-- ~~Connect Kafka with metrics storage~~;
-- Write a device test load using python + locust or python + multiprocessing or smth else;
-- Make stress test;
-- May be deploy all of it on the Google Cloud or AWS (with free subscription);
-- Make perfomance tests depending on number of nodes available;
-- Make some test on fault-tolerance (Does our system works properly when some nodes unavailable?);
-
+After login, you need to specify:
+- Data source. Choose Prometheus and enter `http://prometheus:9090` in URL field.
+- Import a custom dashboard. See `grafana` dir. 

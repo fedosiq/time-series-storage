@@ -1,0 +1,4 @@
+blinker==1.4
+aiokafka==0.7.0
+click==7.1.2
+confluent-kafka==1.5.0

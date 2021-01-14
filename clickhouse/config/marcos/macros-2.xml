@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!--
+  NOTE: User and query level settings are set up in "users.xml" file.
+-->
+<yandex>
+    <macros>
+        <shard>02</shard>
+    </macros>
+</yandex>

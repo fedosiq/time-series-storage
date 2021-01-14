@@ -78,7 +78,7 @@ services:
       - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse/macros/macros-4.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
-      - "8125:8123"
+      - "8126:8123"
     depends_on:
       - kafka-1
       - kafka-2
@@ -92,7 +92,7 @@ services:
       - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse/macros/macros-5.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
-      - "8125:8123"
+      - "8127:8123"
     depends_on:
       - kafka-1
       - kafka-2
@@ -106,7 +106,7 @@ services:
       - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse/macros/macros-6.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
-      - "8125:8123"
+      - "8128:8123"
     depends_on:
       - kafka-1
       - kafka-2

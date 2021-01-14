@@ -9,7 +9,7 @@ scrape_configs:
 
   - job_name: clickhouse
     static_configs:
-      - targets: [ 'ch-1:8001', 'ch-2:8001', 'ch-3:8001' ]
+      - targets: [ 'ch-1:8001', 'ch-2:8001', 'ch-3:8001', 'ch-4:8001', 'ch-5:8001', 'ch-6:8001' ]
 
   - job_name: kafka
     static_configs:

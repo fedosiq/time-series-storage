@@ -33,7 +33,7 @@ services:
     volumes:
       - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
       - ./clickhouse/config:/etc/clickhouse-server
-      - ./clickhouse/config/macros/macros-1.xml:/etc/metrika.xml
+      - ./clickhouse/macros/macros-1.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
       - "8123:8123"
     depends_on:
@@ -46,7 +46,7 @@ services:
     volumes:
       - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
       - ./clickhouse/config:/etc/clickhouse-server
-      - ./clickhouse/config/macros/macros-2.xml:/etc/metrika.xml
+      - ./clickhouse/macros/macros-2.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
       - "8124:8123"
     depends_on:
@@ -59,7 +59,7 @@ services:
     volumes:
       - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
       - ./clickhouse/config:/etc/clickhouse-server
-      - ./clickhouse/config/macros/macros-3.xml:/etc/metrika.xml
+      - ./clickhouse/macros/macros-3.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
       - "8125:8123"
     depends_on:

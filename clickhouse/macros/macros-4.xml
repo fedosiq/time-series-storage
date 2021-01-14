@@ -4,7 +4,7 @@
 -->
 <yandex>
     <macros>
-        <shard>03</shard>
-        <replica_name>server-03<replica_name>
+        <shard>01</shard>
+        <replica_name>server-replica-01<replica_name>
     </macros>
 </yandex>

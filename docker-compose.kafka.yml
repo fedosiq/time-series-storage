@@ -69,6 +69,48 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+  ch-4:
+    image: yandex/clickhouse-server
+    restart: always
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
+      - ./clickhouse/macros/macros-4.xml:/etc/clickhouse-server/config.d/macros.xml
+    ports:
+      - "8125:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+  ch-5:
+    image: yandex/clickhouse-server
+    restart: always
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
+      - ./clickhouse/macros/macros-5.xml:/etc/clickhouse-server/config.d/macros.xml
+    ports:
+      - "8125:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+  ch-6:
+    image: yandex/clickhouse-server
+    restart: always
+    volumes:
+      - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
+      - ./clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
+      - ./clickhouse/macros/macros-6.xml:/etc/clickhouse-server/config.d/macros.xml
+    ports:
+      - "8125:8123"
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
   kafka-1:
     build: ./kafka
     restart: always

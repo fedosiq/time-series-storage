@@ -32,7 +32,8 @@ services:
     restart: always
     volumes:
       - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
-      - ./clickhouse/config:/etc/clickhouse-server
+      - ./clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse/macros/macros-1.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
       - "8123:8123"
@@ -45,7 +46,8 @@ services:
     restart: always
     volumes:
       - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
-      - ./clickhouse/config:/etc/clickhouse-server
+      - ./clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse/macros/macros-2.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
       - "8124:8123"
@@ -58,7 +60,8 @@ services:
     restart: always
     volumes:
       - ./clickhouse/tables.sql:/docker-entrypoint-initdb.d/tables.sql
-      - ./clickhouse/config:/etc/clickhouse-server
+      - ./clickhouse/config/config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse/config/users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse/macros/macros-3.xml:/etc/clickhouse-server/config.d/macros.xml
     ports:
       - "8125:8123"

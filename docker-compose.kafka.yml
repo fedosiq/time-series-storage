@@ -1,10 +1,32 @@
 version: '3'
 services:
-  zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
+  zoo1:
+    image: zookeeper
+    restart: always
+    hostname: zoo1
     ports:
-      - "2181:2181"
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+  zoo2:
+    image: zookeeper
+    restart: always
+    hostname: zoo2
+    ports:
+      - 2182:2181
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 server.3=zoo3:2888:3888;2181
+  zoo3:
+    image: zookeeper
+    restart: always
+    hostname: zoo3
+    ports:
+      - 2183:2181
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
   ch-1:
     image: yandex/clickhouse-server
     volumes:
@@ -39,7 +61,7 @@ services:
       - kafka-2
       - kafka-3
   kafka-1:
-    build: .
+    build: ./kafka
     restart: always
     ports:
       - "19092:19092"
@@ -50,12 +72,14 @@ services:
       KAFKA_LISTENERS: OUTSIDE://:19092,INSIDE://:19093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: zoo1:2181
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml -Xmx5G -Xms3G
     depends_on:
-      - zookeeper
+      - zoo1 
+      - zoo2
+      - zoo3
   kafka-2:
-    build: .
+    build: ./kafka
     restart: always
     ports:
       - "29092:29092"
@@ -66,12 +90,14 @@ services:
       KAFKA_LISTENERS: OUTSIDE://:29092,INSIDE://:29093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: zoo1:2181
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml -Xmx5G -Xms3G
     depends_on:
-      - zookeeper
+      - zoo1 
+      - zoo2
+      - zoo3
   kafka-3:
-    build: .
+    build: ./kafka
     restart: always
     ports:
       - "39092:39092"
@@ -82,10 +108,12 @@ services:
       KAFKA_LISTENERS: OUTSIDE://:39092,INSIDE://:39093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: zoo1:2181
       KAFKA_OPTS: -javaagent:/usr/app/jmx_prometheus_javaagent.jar=7071:/usr/app/prom-jmx-agent-config.yml -Xmx5G -Xms3G
     depends_on:
-      - zookeeper
+      - zoo1 
+      - zoo2
+      - zoo3
   kafka-rest-proxy:
     image: confluentinc/cp-kafka-rest:5.5.1
     hostname: kafka-rest-proxy
